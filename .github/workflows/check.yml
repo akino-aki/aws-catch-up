@@ -1,0 +1,25 @@
+# 記事の記入状況を表示し、未調査のまま公開される記事がないかを確認する。
+# main のブランチ保護で必須チェックにしているので、これが失敗すると main にマージできない。
+name: check
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [work]
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: 記入状況
+        run: |
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+          node scripts/check-study.js | tee -a "$GITHUB_STEP_SUMMARY"
+          echo '```' >> "$GITHUB_STEP_SUMMARY"
+      - name: 未調査のまま公開される記事がないか
+        run: node scripts/check-study.js --guard

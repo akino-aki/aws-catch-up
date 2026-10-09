@@ -1,0 +1,17 @@
+{
+  "name": "aws-catch-up",
+  "version": "1.0.0",
+  "scripts": {
+    "check": "node scripts/check-study.js",
+    "prepare-publish": "node scripts/prepare-publish.js",
+    "preview": "zenn preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "zenn-cli": "^0.2.3"
+  },
+  "private": true
+}
