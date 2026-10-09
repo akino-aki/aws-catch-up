@@ -6,12 +6,26 @@
 // 週は「対象週の月曜日」の日付で表す（記事ファイル名 aws-weekly-YYYY-MM-DD.md と同じ）。
 // 「週刊生成AI with AWS」などの別の連載は対象外。
 
+const { execFileSync } = require("child_process");
+
 const FEED_URL = "https://aws.amazon.com/jp/blogs/news/tag/%E9%80%B1%E5%88%8Aaws/feed/";
 const SITE = "https://aws.amazon.com";
 const TITLE = /^週刊AWS\s*[–-]\s*(\d{4})\/(\d{1,2})\/(\d{1,2})\s*週/;
+const USER_AGENT = "aws-catch-up (https://github.com/akino-aki/aws-catch-up)";
 
+// Node の fetch は HTTPS_PROXY を使わないため、プロキシ経由でしか外に出られない環境
+// （クラウドのルーティンなど）では失敗する。そのときは HTTPS_PROXY を使う curl で取り直す。
 async function get(url) {
-  const res = await fetch(url, { headers: { "User-Agent": "aws-catch-up (https://github.com/akino-aki/aws-catch-up)" } });
+  let res;
+  try {
+    res = await fetch(url, { headers: { "User-Agent": USER_AGENT } });
+  } catch {
+    try {
+      return execFileSync("curl", ["-sSL", "--fail", "-A", USER_AGENT, url], { encoding: "utf8", maxBuffer: 64 * 1024 * 1024 });
+    } catch (error) {
+      throw new Error(`${url} の取得に失敗した（fetch と curl のどちらも失敗: ${error.message.split("\n")[0]}）`);
+    }
+  }
   if (!res.ok) throw new Error(`${url} の取得に失敗した（HTTP ${res.status}）`);
   return res.text();
 }
