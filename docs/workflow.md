@@ -53,6 +53,14 @@ work ─●──●──●──●──●──●──●──●──
 
 ## 毎日 3:00 のルーティン（Claude・クラウド）
 
+手順はスキル `/aws-weekly`（`.claude/skills/aws-weekly/SKILL.md`）にまとめてあり、ルーティンはこれを実行するだけ。手動でも同じように動かせる。
+
+| コマンド | やること |
+|---|---|
+| `/aws-weekly` | ルーティンと同じ処理（確認 → 公開 → 収集） |
+| `/aws-weekly 2026-09-21` | 指定した週の下書きを作るだけ（さかのぼり収集など） |
+| `/aws-weekly --dry-run` | push・PR 作成・コミットをせずに、何が起きるかを確認する |
+
 1. **新しい週刊AWS が出ているか確認する**
    - 週刊AWS の最新号の対象週を調べ、`work` にその週の記事ファイルがあるか確認する
    - ある（＝まだ新しい号が出ていない）なら、何もせず終了する
@@ -118,13 +126,15 @@ aws-catch-up/
 ├── scripts/
 │   ├── check-study.js             ✍️ 欄の記入状況と公開対象の判定、記事の形のチェック（npm run check）
 │   ├── check-collect.js           収集したばかりの記事の ✍️ 欄が空かのチェック（CI 用）
+│   ├── fetch-weekly.js            週刊AWS の最新号の判定と、アップデート一覧の取得
 │   └── prepare-publish.js         公開対象の記事を公開用に書き換える（npm run prepare-publish）
 ├── docs/
 │   └── workflow.md                この資料
 ├── .github/workflows/
 │   └── check.yml                  記事の形・収集直後・未調査の公開のチェック
 ├── .claude/
-│   └── launch.json                プレビューの起動設定
+│   ├── launch.json                プレビューの起動設定
+│   └── skills/aws-weekly/         毎日の処理の手順（スキル）
 ├── CLAUDE.md                     Claude（ルーティンを含む）が読むルール
 ├── README.md
 ├── package.json / package-lock.json

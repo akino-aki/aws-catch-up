@@ -4,6 +4,7 @@ AWS のアップデートを毎週追って勉強し、その記録を Zenn に�
 Zenn と GitHub 連携しており、`main` ブランチの `articles/` 配下の Markdown が Zenn に同期される。
 
 運用の詳細（ブランチ、公開の条件、コミットメッセージなど）は [docs/workflow.md](docs/workflow.md) にまとめてある。作業の前に必ず読むこと。
+週刊AWS の収集・公開の作業は、スキル `/aws-weekly`（`.claude/skills/aws-weekly/SKILL.md`）の手順で行う。
 
 ## 流れの要点
 
