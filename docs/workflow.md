@@ -26,15 +26,20 @@ work ─●──●──●──●──●──●──●──●──
 - `main` はブランチ保護で守られていて、直接 push できない
 - PR は通常のマージ（マージコミットを作る）で取り込む。毎日のコミットをそのまま履歴に残す
 
-## 安全装置：未調査の記事は公開できない
+## 安全装置：AI の間違いを CI で止める
 
-`main` へのマージには、GitHub Actions のチェック（`.github/workflows/check.yml`）に通ることが必須になっている。
+`main` へのマージには、GitHub Actions のチェック（`.github/workflows/check.yml`）に通ることが必須になっている。ルーティン（AI）が手順やテンプレートを間違えても、チェックに通らない限り Zenn には公開されない。
 
-- チェックの中身は `npm run check -- --guard`
-- ✍️ 欄が 0 件なのに `published: true` の記事が 1 つでもあると失敗し、PR はマージされない
-- ルーティン（AI）が手順を間違えても、チェックに通らない限り Zenn には公開されない
+| チェック | コマンド | 何を止めるか | いつ動くか |
+|---|---|---|---|
+| 記事の形 | `npm run check -- --lint` | アップデートごとに「🤖 AIの解説」「✍️ 自分の調査・勉強結果」が 1 つずつない、テンプレートにない見出しがある、一覧表の行数とアップデートの件数が合わない | push・PR |
+| 収集直後の記事 | `node scripts/check-collect.js` | `collect:` のコミットで作られた記事の ✍️ 欄に、もう何か書かれている（AI が書いてしまった） | `work` への push |
+| 未調査の公開 | `npm run check -- --guard` | ✍️ 欄が 0 件なのに `published: true` の記事がある | push・PR |
 
-チェックは `work` に push したときにも動くので、GitHub の Actions の画面で記入状況を確認できる。
+- ✍️ 欄の判定は、この 3 つで前提（形が正しい・最初は空）を保証したうえで行っている
+- `work` への push で失敗すると、GitHub からメールで通知が届く
+- GitHub の Actions の画面で、記入状況（`npm run check` の結果）も確認できる
+- コードブロックの中の `# コメント` などは見出しとして扱わない
 
 ## Zenn に公開される条件
 
@@ -111,12 +116,13 @@ aws-catch-up/
 ├── templates/
 │   └── weekly.md                  記事のテンプレート
 ├── scripts/
-│   ├── check-study.js             ✍️ 欄の記入状況と公開対象の判定（npm run check）
+│   ├── check-study.js             ✍️ 欄の記入状況と公開対象の判定、記事の形のチェック（npm run check）
+│   ├── check-collect.js           収集したばかりの記事の ✍️ 欄が空かのチェック（CI 用）
 │   └── prepare-publish.js         公開対象の記事を公開用に書き換える（npm run prepare-publish）
 ├── docs/
 │   └── workflow.md                この資料
 ├── .github/workflows/
-│   └── check.yml                  未調査の記事が公開されないかのチェック
+│   └── check.yml                  記事の形・収集直後・未調査の公開のチェック
 ├── .claude/
 │   └── launch.json                プレビューの起動設定
 ├── CLAUDE.md                     Claude（ルーティンを含む）が読むルール

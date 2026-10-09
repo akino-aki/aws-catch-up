@@ -12,26 +12,34 @@ const path = require("path");
 const {
   checkArticle,
   listArticles,
+  scanLines,
+  isHeading,
   isFilled,
   STUDY_HEADING,
-  ANY_HEADING,
   FOOTNOTE_DEF,
   UNSTUDIED,
 } = require("./check-study");
 
 function fillUnstudied(text) {
-  const lines = text.split(/\r?\n/);
+  const scanned = scanLines(text);
+  const lines = scanned.map((s) => s.line);
   const out = [];
   let i = 0;
   while (i < lines.length) {
     out.push(lines[i]);
-    if (!STUDY_HEADING.test(lines[i])) {
+    if (scanned[i].inFence || !STUDY_HEADING.test(lines[i])) {
       i++;
       continue;
     }
     // 欄の本文（次の見出しか脚注の定義の手前まで）を集める
     let j = i + 1;
-    while (j < lines.length && !ANY_HEADING.test(lines[j]) && !FOOTNOTE_DEF.test(lines[j])) j++;
+    while (
+      j < lines.length &&
+      !isHeading(scanned[j]) &&
+      (scanned[j].inFence || !FOOTNOTE_DEF.test(lines[j]))
+    ) {
+      j++;
+    }
     const body = lines.slice(i + 1, j);
     if (isFilled(body.join("\n"))) {
       out.push(...body);

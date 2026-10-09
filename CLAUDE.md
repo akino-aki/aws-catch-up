@@ -14,6 +14,7 @@ Zenn と GitHub 連携しており、`main` ブランチの `articles/` 配下�
   - 収集: 新しい週の下書きを `work` の `articles/` に作って push
 - 公開対象かどうかは `npm run check` の結果で判断する。自分で記事を読んで判断しない
 - PR のチェックが失敗したら、マージを強行しない。PR を残して終了する
+- 収集で下書きを作ったら、コミットする前に `npm run check -- --lint` を実行し、OK になることを確かめる
 
 見た目の確認は `npm run preview`（http://localhost:8000）。プレビューに出るのは `articles/` の記事だけ。
 
