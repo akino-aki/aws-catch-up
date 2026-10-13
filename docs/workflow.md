@@ -73,7 +73,9 @@ git pull           # 深夜にルーティンが下書きを push している�
 
 1. `drafts/<週>/` の下書きの「✍️ 自分の調査・勉強結果」を書く。AI の解説に間違いがあれば直してもよい
 2. 画像は `images/<slug>/` に置き、`![説明](/images/<slug>/ファイル名.png)` で貼る
-3. 見た目は `npm run preview:drafts`（http://localhost:8001）で確認する
+3. 見た目は `npm run preview:drafts`（http://localhost:8001）で確認する。Claude に「プレビュー開いて」と言ってもよい
+   - Zenn のプレビューは `articles/` の直下しか表示できないので、下書きを `.preview/articles/` に 1 か所にまとめてコピーして表示している。画面では週のフォルダがなく、「articles」の下に全部並ぶ
+   - 編集するのは `drafts/<週>/` のほう。保存するとすぐプレビューにも反映される（`.preview/` は触らなくてよい）
 4. commit & push する。何回に分けてもよい
 
 ### 公開する

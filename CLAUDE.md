@@ -110,6 +110,10 @@ aki が書く欄。Claude は、頼まれない限り中身を書かず、テン
 | `npm run preview:drafts` | 下書き（`drafts/<週>/` のすべて）。http://localhost:8001 |
 | `npm run preview` | 公開済みの記事（`articles/`）。http://localhost:8000 |
 
+- aki が「プレビュー開いて」と言ったら、`.claude/launch.json` の設定（下書きは `zenn-preview-drafts`、公開済みは `zenn-preview`）でプレビューを起動し、見たい記事のページを開く。どちらか分からなければ、下書きのほう
+- 「落として」「止めて」と言われたら、起動したプレビューを止める
+- 下書きのプレビューは、Zenn のプレビューが `articles/` の直下しか表示できないため、`drafts/<週>/` の下書きを `.preview/articles/` に 1 か所にまとめてコピーして表示している。画面では週のフォルダがなく、「articles」の下に全部並ぶ。編集するのは `drafts/<週>/` のほうで、保存するとすぐコピーにも反映される。`.preview/` は Git の管理外
+
 ## 今後の検討メモ
 
 - 興味の薄いカテゴリ（例: 機械学習）の下書きを作らない条件を付けるかもしれない
