@@ -6,14 +6,16 @@ topics: ["aws", "awsbackup"]
 published: false
 ---
 
-:::message
-- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
-- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
-:::
+# はじめに
 
 2026/9/28 に発表された「AWS Backup が Amazon FSx for NetApp ONTAP の論理的エアギャップボールトサポートを追加」について、調べたことをまとめます。
 
 https://aws.amazon.com/about-aws/whats-new/2026/09/aws-backup-air-gapped-vault-fsx-ontap/
+
+:::message
+- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
+- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
+:::
 
 # 🤖 AIの解説
 

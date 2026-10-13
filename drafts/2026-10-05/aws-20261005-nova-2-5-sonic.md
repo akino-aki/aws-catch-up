@@ -6,14 +6,16 @@ topics: ["aws", "bedrock", "nova"]
 published: false
 ---
 
-:::message
-- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
-- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
-:::
+# はじめに
 
 2026/10/5 に発表された「音声エージェント向けに推論能力を改善した Amazon Nova 2.5 Sonic を発表」について、調べたことをまとめます。
 
 https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-nova-2.5-sonic/
+
+:::message
+- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
+- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
+:::
 
 # 🤖 AIの解説
 

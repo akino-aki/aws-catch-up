@@ -6,14 +6,16 @@ topics: ["aws", "aurora"]
 published: false
 ---
 
-:::message
-- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
-- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
-:::
+# はじめに
 
 2026/10/2 に発表された「Amazon Aurora DSQL がパーシャルインデックスをサポート」について、調べたことをまとめます。
 
 https://aws.amazon.com/about-aws/whats-new/2026/10/aurora-dsql-partial-indexes/
+
+:::message
+- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
+- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
+:::
 
 # 🤖 AIの解説
 

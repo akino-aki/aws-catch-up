@@ -6,14 +6,16 @@ topics: ["aws", "route53", "security"]
 published: false
 ---
 
-:::message
-- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
-- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
-:::
+# はじめに
 
 2026/9/29 に発表された「Amazon Route 53 Resolver DNS Firewall が Palo Alto Networks Advanced DNS Security のサポートを一般提供開始」について、調べたことをまとめます。
 
 https://aws.amazon.com/about-aws/whats-new/2026/09/route-53-dns-firewall-panw-dns-security-generally-available
+
+:::message
+- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
+- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
+:::
 
 # 🤖 AIの解説
 

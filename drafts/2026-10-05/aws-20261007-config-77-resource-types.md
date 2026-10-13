@@ -6,14 +6,16 @@ topics: ["aws", "config"]
 published: false
 ---
 
-:::message
-- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
-- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
-:::
+# はじめに
 
 2026/10/7 に発表された「AWS Config が 77 の新しいリソースタイプをサポート」について、調べたことをまとめます。
 
 https://aws.amazon.com/about-aws/whats-new/2026/10/aws-config-new-resource-types
+
+:::message
+- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
+- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
+:::
 
 # 🤖 AIの解説
 

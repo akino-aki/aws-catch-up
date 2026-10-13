@@ -6,14 +6,16 @@ topics: ["aws", "securityhub", "s3"]
 published: false
 ---
 
-:::message
-- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
-- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
-:::
+# はじめに
 
 2026/10/9 に発表された「AWS Security Hub が findings の S3 への CSV / JSON 形式エクスポートに対応」について、調べたことをまとめます。
 
 https://aws.amazon.com/about-aws/whats-new/2026/10/security-hub-exports-s3-csv-json/
+
+:::message
+- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
+- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
+:::
 
 # 🤖 AIの解説
 

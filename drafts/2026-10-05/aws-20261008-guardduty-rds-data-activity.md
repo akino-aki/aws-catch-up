@@ -6,14 +6,16 @@ topics: ["aws", "guardduty", "rds"]
 published: false
 ---
 
-:::message
-- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
-- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
-:::
+# はじめに
 
 2026/10/8 に発表された「Amazon GuardDuty RDS Protection が Aurora および RDS データベースでのデータ流出とデータ破壊を検出可能に」について、調べたことをまとめます。
 
 https://aws.amazon.com/about-aws/whats-new/2026/10/guardduty-rds-data-exfiltration/
+
+:::message
+- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
+- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
+:::
 
 # 🤖 AIの解説
 

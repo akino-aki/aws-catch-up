@@ -6,14 +6,16 @@ topics: ["aws", "ec2"]
 published: false
 ---
 
-:::message
-- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
-- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
-:::
+# はじめに
 
 2026/9/28 に発表された「Amazon EC2 Future-dated Capacity Reservations が開始日の延期に対応」について、調べたことをまとめます。
 
 https://aws.amazon.com/about-aws/whats-new/2026/09/ec2-fcr-postpone-start-date/
+
+:::message
+- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
+- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
+:::
 
 # 🤖 AIの解説
 

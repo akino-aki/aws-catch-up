@@ -15,8 +15,8 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const DIRS = ["drafts", "articles"];
 const SLUG = /^aws-\d{8}-[a-z0-9-]+$/;
-const SECTIONS = ["🤖 AIの解説", "✍️ 自分の調査・勉強結果", "参考"];
-const STUDY = SECTIONS[1];
+const SECTIONS = ["はじめに", "🤖 AIの解説", "✍️ 自分の調査・勉強結果", "参考"];
+const STUDY = SECTIONS[2];
 const FENCE = /^\s*(```|~~~)/;
 const FOOTNOTE_DEF = /^\[\^[^\]]+\]:/;
 
