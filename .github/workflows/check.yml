@@ -1,4 +1,4 @@
-# 記事の形と記入状況を確認し、未調査のまま公開される記事がないかを確認する。
+# 記事の形と公開のルールを確認する。
 # main のブランチ保護で必須チェックにしているので、これが失敗すると main にマージできない。
 name: check
 
@@ -18,15 +18,15 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - name: 記入状況
+      - name: 記事の一覧
         run: |
           echo '```' >> "$GITHUB_STEP_SUMMARY"
-          node scripts/check-study.js | tee -a "$GITHUB_STEP_SUMMARY"
+          node scripts/check-articles.js | tee -a "$GITHUB_STEP_SUMMARY"
           echo '```' >> "$GITHUB_STEP_SUMMARY"
       - name: 記事の形がテンプレートどおりか
-        run: node scripts/check-study.js --lint
-      - name: 収集したばかりの記事の ✍️ 欄が空か
+        run: node scripts/check-articles.js --lint
+      - name: 収集したばかりの下書きの ✍️ 欄が空か
         if: github.event_name == 'push'
         run: node scripts/check-collect.js "${{ github.event.before }}" "${{ github.sha }}"
-      - name: 未調査のまま公開される記事がないか
-        run: node scripts/check-study.js --guard
+      - name: 公開のルールに反する記事がないか
+        run: node scripts/check-articles.js --guard

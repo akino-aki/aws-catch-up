@@ -1,0 +1,55 @@
+---
+title: "EC2 の将来日付のキャパシティ予約で、開始日を後ろにずらせるようになった"
+emoji: "☁️"
+type: "tech"
+topics: ["aws", "ec2"]
+published: false
+---
+
+:::message
+- 🤖 **AIの解説** は Claude が書いた解説です。内容がまちがっている可能性があります
+- ✍️ **自分の調査・勉強結果** は、自分で実際に確認・調査した内容です
+:::
+
+2026/9/28 に発表された「Amazon EC2 Future-dated Capacity Reservations が開始日の延期に対応」について、調べたことをまとめます。
+
+https://aws.amazon.com/about-aws/whats-new/2026/09/ec2-fcr-postpone-start-date/
+
+# 🤖 AIの解説
+
+| 項目 | 内容 |
+|---|---|
+| **要約** | 先の日付で予約したサーバーの枠を、あとから後ろにずらせるようになった |
+| **料金** | 追加料金の記載なし |
+| **対象** | Future-dated Capacity Reservations を使っている人 |
+
+:::details そもそも Future-dated Capacity Reservations とは？
+EC2（AWS の仮想サーバー）を「◯月◯日から、この台数ぶん必ず使える」ように、最大 120 日先まで前もって押さえておく予約の仕組みです。人気の店を予約しておくイメージで、大きなセールやイベントの日にサーバーが足りなくなるのを防げます。
+:::
+
+**今回なにが変わった？**
+
+| | これまで | これから |
+|---|---|---|
+| 予定が延びたとき | キャンセルして予約し直す | 開始日だけ後ろにずらせる |
+| 変更する前 | ― | 新しいコミット期間[^commit]の見積もりが表示される |
+
+**どんなときにうれしい？**
+新サービスのリリースやキャンペーンの日程が延びたとき。予約をキャンセルせずに、日付だけずらせます。
+
+:::message
+**確認ポイント**
+EC2 コンソールの左メニュー →「キャパシティの予約（Capacity Reservations）」
+キーワード: 将来の日付のキャパシティ予約、コミット期間
+:::
+
+# ✍️ 自分の調査・勉強結果
+
+<!-- ここに自分で調べたこと・試したことを書く -->
+
+# 参考
+
+- [週刊AWS – 2026/9/28週](https://aws.amazon.com/jp/blogs/news/aws-weekly-20260928/)
+- [Amazon EC2 Future-dated Capacity Reservations が開始日の延期に対応](https://aws.amazon.com/about-aws/whats-new/2026/09/ec2-fcr-postpone-start-date/)
+
+[^commit]: 予約した枠を、最低限この期間は使い続けると約束する期間のこと。開始日の 2 週間以内に変更すると、この期間が長くなる場合があります。

@@ -1,5 +1,5 @@
-// 収集（collect: で始まるコミット）で作られた記事が、✍️ 欄が空のままになっているかを調べる。
-// AI が収集のときに ✍️ 欄へ書いてしまうと、調べていない記事が「公開対象」になってしまうため。
+// 収集（collect: で始まるコミット）で作られた下書きが、✍️ 欄が空のままになっているかを調べる。
+// AI が収集のときに ✍️ 欄へ書いてしまうと、aki が書いていない内容が記事に混ざってしまうため。
 //
 //   node scripts/check-collect.js <before> <after>
 //
@@ -8,7 +8,7 @@
 
 const { execFileSync } = require("child_process");
 const path = require("path");
-const { checkText, lintText, ARTICLE_NAME } = require("./check-study");
+const { isStudied, isPublished, lintText } = require("./check-articles");
 
 function git(...args) {
   return execFileSync("git", args, { encoding: "utf8" }).trim();
@@ -33,22 +33,22 @@ const commits = git("log", "--format=%H %s", range)
 let ng = false;
 for (const line of commits) {
   const [sha, ...subject] = line.split(" ");
-  const files = git("diff-tree", "--no-commit-id", "--name-only", "-r", "--root", "--diff-filter=AM", sha, "--", "articles/")
+  const files = git("diff-tree", "--no-commit-id", "--name-only", "-r", "--root", "--diff-filter=A", sha, "--", "drafts/")
     .split("\n")
-    .filter((file) => ARTICLE_NAME.test(path.basename(file)));
+    .filter((file) => file.endsWith(".md"));
   for (const file of files) {
     const text = git("show", `${sha}:${file}`);
-    const result = checkText(text, path.basename(file));
-    const label = `${sha.slice(0, 7)} ${subject.join(" ")}: ${result.file}`;
-    if (result.filled > 0) {
-      console.error(`NG: ${label}: 収集したばかりなのに ✍️ 欄が ${result.filled} 件書かれている`);
+    const slug = path.basename(file, ".md");
+    const label = `${sha.slice(0, 7)} ${subject.join(" ")}: ${file}`;
+    if (isStudied(text)) {
+      console.error(`NG: ${label}: 収集したばかりなのに ✍️ 欄に何か書かれている`);
       ng = true;
     }
-    if (result.published) {
+    if (isPublished(text)) {
       console.error(`NG: ${label}: 収集したばかりなのに published: true になっている`);
       ng = true;
     }
-    for (const error of lintText(text)) {
+    for (const error of lintText(text, slug)) {
       console.error(`NG: ${label}: ${error}`);
       ng = true;
     }

@@ -1,147 +1,115 @@
 # 運用ルール
 
-AWS のアップデート（週刊AWS）を毎週勉強し、その記録を Zenn に公開するまでの流れ。
+AWS のアップデート（週刊AWS）を 1 件ずつ調べて勉強し、1 アップデート 1 本の記事として Zenn に公開するまでの流れ。
 
 ## 全体像
 
 ```
-main ──────────────●──────────────────────●────  ← Zenn に同期される（公開済みの状態）
-                  ↗ 公開（PR をマージ）    ↗ 公開（PR をマージ）
-work ─●──●──●──●──●──●──●──●──●──●──●──●──●────  ← 毎日の作業場所（Zenn には同期されない）
-      収集 勉強 勉強 …        収集 勉強 勉強 …
+週刊AWS が出る
+   ↓  毎日 3:00 のルーティン（Claude）
+drafts/ に、アップデートごとの下書きができる（🤖 AIの解説 まで書かれている）
+   ↓  aki が work ブランチで ✍️ 欄を書いて push（何日かに分けてよい）
+aki が Claude に「〇〇を公開して」と言う
+   ↓  npm run publish -- <slug>
+articles/ に移り、publish/<slug> から main への PR ができる
+   ↓  CI のチェックに通ると自動でマージ
+Zenn に公開される
 ```
 
-- 毎日 3:00 にルーティンが動き、**新しい週刊AWS が出ていたら**「先週までの分を公開 → 新しい週の下書きを作成」を行う
-- aki は `work` ブランチで、毎日少しずつ「✍️ 自分の調査・勉強結果」を書いて push する
-- 新しい週刊AWS が出た日の深夜に、それまでに書いた分がまとめて公開される
+- 記事は書き終えたものから 1 本ずつ公開する。新しい情報は早いほうが読んでもらえるため
+- 公開するかどうかは aki が決める。ルーティンは公開しない
 
 ## ブランチ
 
 | ブランチ | 役割 | 誰が触るか |
 |---|---|---|
-| `main` | Zenn と連携。公開済みの状態 | 誰も直接触らない。PR のマージでだけ更新される |
-| `work` | 毎日の作業場所。下書き・勉強・ルールの変更はすべてここ | aki とルーティン |
-| `publish/YYYY-MM-DD` | 公開用の PR を出すためのブランチ。その時点の `work` のコピー | ルーティンが作る |
+| `main` | Zenn と連携。公開済みの記事だけがある | 誰も直接触らない。PR のマージでだけ更新される |
+| `work` | 既定ブランチ。毎日の作業場所 | aki とルーティン |
+| `publish/<slug>` | 公開用。公開のたびに作られ、マージされると消える | `npm run publish` |
 
-- `main` はブランチ保護で守られていて、直接 push できない
-- PR は通常のマージ（マージコミットを作る）で取り込む。毎日のコミットをそのまま履歴に残す
+```
+main  ─────────●──────────────●──────────
+              ↗ PR           ↗ PR
+publish/A ───●   publish/B ─●        ← main + 記事 A（または B）だけ
+work  ─●──●──●──●──●──●──●──●──●──
+      収集 勉強 公開A 勉強 公開B …
+```
 
-## 安全装置：AI の間違いを CI で止める
-
-`main` へのマージには、GitHub Actions のチェック（`.github/workflows/check.yml`）に通ることが必須になっている。ルーティン（AI）が手順やテンプレートを間違えても、チェックに通らない限り Zenn には公開されない。
-
-| チェック | コマンド | 何を止めるか | いつ動くか |
-|---|---|---|---|
-| 記事の形 | `npm run check -- --lint` | アップデートごとに「🤖 AIの解説」「✍️ 自分の調査・勉強結果」が 1 つずつない、テンプレートにない見出しがある、一覧表の行数とアップデートの件数が合わない | push・PR |
-| 収集直後の記事 | `node scripts/check-collect.js` | `collect:` のコミットで作られた記事の ✍️ 欄に、もう何か書かれている（AI が書いてしまった） | `work` への push |
-| 未調査の公開 | `npm run check -- --guard` | ✍️ 欄が 0 件なのに `published: true` の記事がある | push・PR |
-
-- ✍️ 欄の判定は、この 3 つで前提（形が正しい・最初は空）を保証したうえで行っている
-- `work` への push で失敗すると、GitHub からメールで通知が届く
-- GitHub の Actions の画面で、記入状況（`npm run check` の結果）も確認できる
-- コードブロックの中の `# コメント` などは見出しとして扱わない
-
-## Zenn に公開される条件
-
-| 記事ファイルの場所 | `published` | 結果 |
-|---|---|---|
-| `main` 以外のブランチ | どちらでも | Zenn には何も起きない |
-| `main` | `false` | Zenn に下書きとして入る（他人には見えない） |
-| `main` | `true` | 公開 |
-
-公開後でも、`main` の記事を書き換えれば Zenn の記事も更新される。ファイル名（slug）は変えないこと。変えると別の記事として扱われる。
-
-## 毎日 3:00 のルーティン（Claude・クラウド）
-
-手順はスキル `/aws-weekly`（`.claude/skills/aws-weekly/SKILL.md`）にまとめてあり、ルーティンはこれを実行するだけ。手動でも同じように動かせる。
-
-| コマンド | やること |
-|---|---|
-| `/aws-weekly` | ルーティンと同じ処理（確認 → 公開 → 収集） |
-| `/aws-weekly 2026-09-21` | 指定した週の下書きを作るだけ（さかのぼり収集など） |
-| `/aws-weekly --dry-run` | push・PR 作成・コミットをせずに、何が起きるかを確認する |
-
-1. **新しい週刊AWS が出ているか確認する**
-   - 週刊AWS の最新号の対象週を調べ、`work` にその週の記事ファイルがあるか確認する
-   - ある（＝まだ新しい号が出ていない）なら、何もせず終了する
-2. **公開する**
-   1. `work` で `npm run prepare-publish` を実行する。公開対象の記事だけが次のように書き換わる
-      - `published: true` にする
-      - 未記入の ✍️ 欄を「今週は未調査」で埋める
-   2. 変更があれば `publish:` でコミットして、`work` を push する
-   3. `main` と `work` に差分があれば、`work` から `publish/YYYY-MM-DD`（実行日）ブランチを作って push する
-   4. `publish/YYYY-MM-DD` → `main` の PR を作り、自動マージを予約する（`gh pr merge --auto --merge`）
-   5. チェックに通れば自動でマージされ、Zenn に公開される。通らなければ PR が残るので、aki が確認する
-3. **収集する**
-   - 新しい週の下書きを `work` の `articles/` に作り、`collect:` でコミットして push する
-
-公開用の PR は `work` のコピー（`publish/...`）から出すので、そのあと収集で `work` に push しても PR には入らない。
-
-### 公開対象の判定
-
-`npm run check` の結果で機械的に判定する。
-
-| 記事の状態 | 判定 |
-|---|---|
-| 公開済み（`published: true`） | 書き足した分は、マージでそのまま更新される |
-| 未公開で、記入済みの ✍️ 欄が 1 件以上 | **公開対象** |
-| 未公開で、記入済みの ✍️ 欄が 0 件 | 公開しない（`published: false` のまま） |
-
-「記入済み」は、✍️ 欄にテンプレートのコメント（`<!-- ... -->`）以外の文字があること。「今週は未調査」だけの欄は未記入として数える。
-
-## aki の作業
-
-1. 書き始める前に最新を取ってくる（深夜にルーティンが push していることがあるため）
-
-   ```bash
-   git switch work
-   git pull
-   ```
-
-2. `articles/` の記事の「✍️ 自分の調査・勉強結果」を書く。AI の解説に間違いがあれば直してもよい
-3. 見た目を確認したいときはプレビューを使う（http://localhost:8000）
-
-   ```bash
-   npm run preview
-   ```
-
-4. コミットして push する。何回に分けてもよい
-5. 次の公開対象になるかを確認したいときは
-
-   ```bash
-   npm run check
-   ```
-
-さかのぼって古い記事に書き足した分も、次の公開で更新される。
+- `work` を丸ごと `main` にマージしない。公開用ブランチには、`main` に「公開する記事とその画像」だけを足す。ほかの記事に push 済みの書きかけがあっても、一緒に公開されない
+- 記事以外（スクリプト・CI・ドキュメント・テンプレートなど）は、公開のたびに `work` の内容で `main` を更新する
+- Git Flow の `develop`（＝ `work`）と `release`（＝ `publish/*`）だけを使った簡易版に近い
 
 ## フォルダ
 
 ```
 aws-catch-up/
-├── articles/                     Zenn の記事（1 週 = 1 ファイル）
-│   └── aws-weekly-2026-09-28.md   ファイル名の日付は対象週の月曜日
-├── books/                        zenn-cli が作ったもの（使わない）
-├── templates/
-│   └── weekly.md                  記事のテンプレート
+├── drafts/                       下書き（Zenn には同期されない）
+├── articles/                     公開済みの記事（main のものが Zenn に同期される）
+├── images/<slug>/                記事の画像
+├── templates/article.md          記事のテンプレート
+├── collected-weeks.txt           収集した週の記録
 ├── scripts/
-│   ├── check-study.js             ✍️ 欄の記入状況と公開対象の判定、記事の形のチェック（npm run check）
-│   ├── check-collect.js           収集したばかりの記事の ✍️ 欄が空かのチェック（CI 用）
+│   ├── check-articles.js          記事の一覧・形のチェック・公開ルールのチェック（npm run check）
+│   ├── check-collect.js           収集したばかりの下書きの ✍️ 欄が空かのチェック（CI 用）
 │   ├── fetch-weekly.js            週刊AWS の最新号の判定と、アップデート一覧の取得
-│   └── prepare-publish.js         公開対象の記事を公開用に書き換える（npm run prepare-publish）
-├── docs/
-│   └── workflow.md                この資料
-├── .github/workflows/
-│   └── check.yml                  記事の形・収集直後・未調査の公開のチェック
-├── .claude/
-│   ├── launch.json                プレビューの起動設定
-│   └── skills/aws-weekly/         毎日の処理の手順（スキル）
-├── CLAUDE.md                     Claude（ルーティンを含む）が読むルール
-├── README.md
-├── package.json / package-lock.json
-└── .gitignore
+│   ├── publish.js                 公開（npm run publish -- <slug>）
+│   └── preview-drafts.js          下書きのプレビュー（npm run preview:drafts）
+├── .github/workflows/check.yml   CI
+├── .claude/skills/aws-weekly/    収集の手順（スキル）
+├── CLAUDE.md                     Claude が読むルール
+└── docs/workflow.md              この資料
 ```
 
-記事として使うのは `articles/` だけ。画像を載せたくなったら、Zenn の決まりに従って `images/` を作る。
+## aki の作業
+
+### 書く
+
+```bash
+git switch work    # 既定ブランチなので、普段は最初から work にいる
+git pull           # 深夜にルーティンが下書きを push していることがある
+```
+
+1. `drafts/` の下書きの「✍️ 自分の調査・勉強結果」を書く。AI の解説に間違いがあれば直してもよい
+2. 画像は `images/<slug>/` に置き、`![説明](/images/<slug>/ファイル名.png)` で貼る
+3. 見た目は `npm run preview:drafts`（http://localhost:8001）で確認する
+4. commit & push する。何回に分けてもよい
+
+### 公開する
+
+Claude に「〇〇を公開して」と言う。Claude が `npm run publish -- <slug>` を実行し、PR の URL を教えてくれる。
+
+公開済みの記事に書き足したときも、「〇〇の更新を反映して」と言えば同じ手順で更新される。ファイル名（slug）は変えないこと。変えると Zenn では別の記事として扱われる。
+
+### 記事の一覧を見る
+
+```bash
+npm run check
+```
+
+## 毎日 3:00 のルーティン（Claude・クラウド）
+
+スキル `/aws-weekly`（`.claude/skills/aws-weekly/SKILL.md`）を実行する。手動でも同じように動かせる。
+
+| コマンド | やること |
+|---|---|
+| `/aws-weekly` | ルーティンと同じ処理。最新号がまだ収集されていなければ、下書きを作る |
+| `/aws-weekly 2026-09-21` | 指定した週の下書きを作る（さかのぼり収集など） |
+| `/aws-weekly --dry-run` | コミット・push をせずに、何が起きるかを確認する |
+
+- 収集した週は `collected-weeks.txt` に記録する。興味のない下書きを消しても、同じ週がもう一度収集されることはない
+- 週刊AWS は祝日の週に遅れたり、お休みの週があったりする。出ていない日は何もしない
+
+## 安全装置（CI）
+
+`main` へのマージには、GitHub Actions のチェック（`.github/workflows/check.yml`）に通ることが必須になっている。
+
+| チェック | 何を止めるか | いつ動くか |
+|---|---|---|
+| 記事の形（`npm run check -- --lint`） | ファイル名・タイトル・`#` の見出しがテンプレートどおりでない | push・PR |
+| 収集直後の下書き（`check-collect.js`） | `collect:` のコミットで作られた下書きの ✍️ 欄に、もう何か書かれている | `work` への push |
+| 公開のルール（`npm run check -- --guard`） | ✍️ が空のまま `articles/` にある、`articles/` なのに `published: false`、`drafts/` なのに `published: true` | push・PR |
+
+✍️ 欄のチェックは「空のまま公開されるのを防ぐ」ためだけのもので、公開してよいかの判断には使わない。
 
 ## コミットメッセージ
 
@@ -149,20 +117,16 @@ aws-catch-up/
 
 | 種類 | 誰が | 使う場面 | 例 |
 |---|---|---|---|
-| `collect` | ルーティン | 下書きの作成 | `collect: 2026/10/5週の下書きを作成` |
-| `publish` | ルーティン | 公開の準備（`prepare-publish` の結果） | `publish: 2026/9/28週を公開` |
-| `study` | aki | 調査を書き足した（さかのぼって書いた分も含む） | `study: EC2 FCR の開始日延期を調査` |
+| `collect` | ルーティン | 下書きの作成 | `collect: 2026/10/5週の下書き（15 本）を作成` |
+| `study` | aki | 調査を書き足した | `study: CloudWatch Logs の自動インデックスを試した` |
 | `fix` | aki | 書いた内容の間違いを直した | `fix: Aurora の料金説明を修正` |
+| `publish` | `npm run publish` | 公開・更新 | `publish: <記事のタイトル>` |
 | `docs` | 両方 | ルール・テンプレートの変更 | `docs: 確認ポイントの書式を変更` |
 | `chore` | 両方 | 設定やツールの変更 | `chore: zenn-cli を更新` |
-
-公開用 PR のタイトルは `publish: YYYY/M/D の公開` とする。
-
-コミットメッセージは履歴を読みやすくするためのもので、公開の判定には使わない。付け忘れても公開には影響しない。
 
 ## リポジトリの設定
 
 - public リポジトリ。コミットのメールアドレスは GitHub の noreply アドレスを使う
 - 既定ブランチは `work`（クラウドのルーティンが取得したときに、最初からスキルが使えるようにするため）。Zenn が読むブランチは Zenn 側の設定で `main` にしている
 - `main` のブランチ保護: PR 必須、チェック `check` の成功必須、管理者も例外なし
-- 自動マージ（auto-merge）を有効にしている
+- 自動マージ（auto-merge）を有効にし、マージした PR のブランチは自動で消す

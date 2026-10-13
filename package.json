@@ -2,9 +2,10 @@
   "name": "aws-catch-up",
   "version": "1.0.0",
   "scripts": {
-    "check": "node scripts/check-study.js",
-    "prepare-publish": "node scripts/prepare-publish.js",
-    "preview": "zenn preview"
+    "check": "node scripts/check-articles.js",
+    "publish": "node scripts/publish.js",
+    "preview": "zenn preview",
+    "preview:drafts": "node scripts/preview-drafts.js"
   },
   "keywords": [],
   "author": "",
