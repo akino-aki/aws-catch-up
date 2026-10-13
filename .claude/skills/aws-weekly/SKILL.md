@@ -1,15 +1,15 @@
 ---
 name: aws-weekly
-description: aws-catch-up リポジトリで、新しい週刊AWS に載ったアップデートを 1 件ずつ調べて、1 アップデート 1 本の下書きを drafts/ に作る（収集だけで、公開はしない）。毎日 3:00 のルーティンから呼ばれるほか、「週刊AWS を収集して」「今週分の下書きを作って」「〇月〇日週の下書きを作って」「ルーティンをお試しで動かして」など、週刊AWS の収集・下書き作成に関わる依頼では必ずこのスキルを使う。記事の公開には使わない。
+description: aws-catch-up リポジトリで、新しい週刊AWS に載ったアップデートを 1 件ずつ調べて、1 アップデート 1 本の下書きを drafts/<週>/ に作る（収集だけで、公開はしない）。毎日 3:00 のルーティンから呼ばれるほか、「週刊AWS を収集して」「今週分の下書きを作って」「〇月〇日週の下書きを作って」「ルーティンをお試しで動かして」など、週刊AWS の収集・下書き作成に関わる依頼では必ずこのスキルを使う。記事の公開には使わない。
 argument-hint: "[YYYY-MM-DD] [--dry-run]"
 ---
 
 # aws-weekly
 
-週刊AWS に載ったアップデートごとに、Zenn 記事の下書きを `drafts/` に作る。
+週刊AWS に載ったアップデートごとに、Zenn 記事の下書きを `drafts/<週>/` に作る。
 運用の全体像は `docs/workflow.md`、記事の書き方は `CLAUDE.md` にある。このスキルはその手順のうち「収集」を実行するためのもの。
 
-**このスキルでは公開しない。** 公開は aki が「公開して」と言ったときだけ、別の手順（`npm run publish`）で行う。
+**このスキルでは公開しない。** 公開は aki が「公開して」と言ったときだけ、スキル `/aws-publish` で行う。
 
 ## 引数
 
@@ -66,7 +66,7 @@ node scripts/fetch-weekly.js week <week>
 
 ### 2-2. アップデートごとに下書きを書く
 
-`templates/article.md` をもとに、`CLAUDE.md` の「下書きの作り方」に従って、1 アップデート 1 本を `drafts/<slug>.md` に書く。表や注釈の使い方の粒度は、既存の下書きや記事（`drafts/`・`articles/`）を 1 本読んでから合わせる。
+`templates/article.md` をもとに、`CLAUDE.md` の「下書きの作り方」に従って、1 アップデート 1 本を `drafts/<week>/<slug>.md` に書く（`<week>` は対象週の月曜日 `YYYY-MM-DD`）。表や注釈の使い方の粒度は、既存の下書きや記事（`drafts/`・`articles/`）を 1 本読んでから合わせる。
 
 | 項目 | 決め方 |
 |---|---|
@@ -92,13 +92,13 @@ npm run check
 ```
 
 - `--lint` が NG なら、エラーの内容に従って直す
-- `npm run check` で、作った下書きがすべて `drafts/` にあり「✍️ なし」になっていることを確かめる
+- `npm run check` で、作った下書きがすべて `drafts/<week>/` にあり「✍️ なし」になっていることを確かめる
 
 ### 2-4. 記録してコミットし、push する
 
 ```bash
 echo "<week>" >> collected-weeks.txt
-git add drafts/ collected-weeks.txt
+git add drafts/<week>/ collected-weeks.txt
 git commit -m "collect: YYYY/M/D週の下書き（N 本）を作成"
 node scripts/check-collect.js HEAD~1 HEAD
 git push
@@ -113,7 +113,7 @@ git push
 ```
 ## aws-weekly の結果（<モード>）
 - 確認: 新しい号あり（2026/10/5週） / 新しい号なし
-- 収集: 下書き 15 本を drafts/ に作成 / スキップ
+- 収集: 下書き 15 本を drafts/2026-10-05/ に作成 / スキップ
   - aws-20261005-xxx: タイトル
   - …
 - 注意: （あれば。チェックの NG、取得の失敗、作らなかったアップデートなど）

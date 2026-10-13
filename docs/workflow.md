@@ -6,24 +6,25 @@ AWS のアップデート（週刊AWS）を 1 件ずつ調べて勉強し、1 �
 
 ```
 週刊AWS が出る
-   ↓  毎日 3:00 のルーティン（Claude）
-drafts/ に、アップデートごとの下書きができる（🤖 AIの解説 まで書かれている）
-   ↓  aki が work ブランチで ✍️ 欄を書いて push（何日かに分けてよい）
+   ↓  毎日 3:00 のルーティン（Claude・/aws-weekly）
+drafts/<週>/ に、アップデートごとの下書きができる（🤖 AIの解説 まで書かれている）
+   ↓  aki が work ブランチで、好きな下書きの ✍️ 欄を書いて push（何日かに分けてよい）
 aki が Claude に「〇〇を公開して」と言う
-   ↓  npm run publish -- <slug>
-articles/ に移り、publish/<slug> から main への PR ができる
-   ↓  CI のチェックに通ると自動でマージ
+   ↓  Claude（/aws-publish）
+レビュー（個人情報・誤字脱字・書き方）→ 結果を書いた PR を作る → プレビューを開く
+   ↓  aki が PR とプレビューを見て、マージする（GitHub のボタン、または「マージして」）
 Zenn に公開される
 ```
 
 - 記事は書き終えたものから 1 本ずつ公開する。新しい情報は早いほうが読んでもらえるため
-- 公開するかどうかは aki が決める。ルーティンは公開しない
+- 公開するかどうか、いつマージするかは aki が決める。ルーティンは公開しない。自動マージもしない
+- 調べていない下書きは `drafts/<週>/` に残り続ける。時間があるときに調べればよい。興味がないものは消してもよい
 
 ## ブランチ
 
 | ブランチ | 役割 | 誰が触るか |
 |---|---|---|
-| `main` | Zenn と連携。公開済みの記事だけがある | 誰も直接触らない。PR のマージでだけ更新される |
+| `main` | Zenn と連携。公開済みの記事だけがある | 誰も直接触らない。aki が PR をマージしたときだけ更新される |
 | `work` | 既定ブランチ。毎日の作業場所 | aki とルーティン |
 | `publish/<slug>` | 公開用。公開のたびに作られ、マージされると消える | `npm run publish` |
 
@@ -43,7 +44,7 @@ work  ─●──●──●──●──●──●──●──●─�
 
 ```
 aws-catch-up/
-├── drafts/                       下書き（Zenn には同期されない）
+├── drafts/<週>/                  下書き。週刊AWS の対象週ごとのフォルダ（Zenn には同期されない）
 ├── articles/                     公開済みの記事（main のものが Zenn に同期される）
 ├── images/<slug>/                記事の画像
 ├── templates/article.md          記事のテンプレート
@@ -52,10 +53,11 @@ aws-catch-up/
 │   ├── check-articles.js          記事の一覧・形のチェック・公開ルールのチェック（npm run check）
 │   ├── check-collect.js           収集したばかりの下書きの ✍️ 欄が空かのチェック（CI 用）
 │   ├── fetch-weekly.js            週刊AWS の最新号の判定と、アップデート一覧の取得
-│   ├── publish.js                 公開（npm run publish -- <slug>）
+│   ├── publish.js                 公開用の PR を作る（/aws-publish の中で使う）
 │   └── preview-drafts.js          下書きのプレビュー（npm run preview:drafts）
 ├── .github/workflows/check.yml   CI
 ├── .claude/skills/aws-weekly/    収集の手順（スキル）
+├── .claude/skills/aws-publish/   公開の手順（スキル）
 ├── CLAUDE.md                     Claude が読むルール
 └── docs/workflow.md              この資料
 ```
@@ -69,14 +71,22 @@ git switch work    # 既定ブランチなので、普段は最初から work �
 git pull           # 深夜にルーティンが下書きを push していることがある
 ```
 
-1. `drafts/` の下書きの「✍️ 自分の調査・勉強結果」を書く。AI の解説に間違いがあれば直してもよい
+1. `drafts/<週>/` の下書きの「✍️ 自分の調査・勉強結果」を書く。AI の解説に間違いがあれば直してもよい
 2. 画像は `images/<slug>/` に置き、`![説明](/images/<slug>/ファイル名.png)` で貼る
 3. 見た目は `npm run preview:drafts`（http://localhost:8001）で確認する
 4. commit & push する。何回に分けてもよい
 
 ### 公開する
 
-Claude に「〇〇を公開して」と言う。Claude が `npm run publish -- <slug>` を実行し、PR の URL を教えてくれる。
+1. Claude に「〇〇を公開して」と言う
+2. Claude が記事をレビューする（個人情報・誤字脱字・書き方）。直したほうがよいところがあれば、直し方を見せて確認してくれる
+3. Claude が PR を作り、Zenn のプレビューを開く。PR の本文にレビュー結果が残る
+4. PR の差分（Files changed）とプレビューを見て、問題なければマージする
+   - GitHub の「Merge pull request」ボタンを押す、または Claude に「マージして」と言う
+   - CI のチェックに通っていないとマージできない
+5. マージから数分で Zenn に反映される
+
+公開をやめるときは、PR をマージせずに閉じ、Claude に「下書きに戻して」と言う。
 
 公開済みの記事に書き足したときも、「〇〇の更新を反映して」と言えば同じ手順で更新される。ファイル名（slug）は変えないこと。変えると Zenn では別の記事として扱われる。
 
@@ -129,4 +139,5 @@ npm run check
 - public リポジトリ。コミットのメールアドレスは GitHub の noreply アドレスを使う
 - 既定ブランチは `work`（クラウドのルーティンが取得したときに、最初からスキルが使えるようにするため）。Zenn が読むブランチは Zenn 側の設定で `main` にしている
 - `main` のブランチ保護: PR 必須、チェック `check` の成功必須、管理者も例外なし
-- 自動マージ（auto-merge）を有効にし、マージした PR のブランチは自動で消す
+- マージした PR のブランチは自動で消す
+- 自動マージ（auto-merge）の機能は有効にしてあるが、使うのは aki が「マージして」と言ったときだけ（チェックが終わり次第マージするため）

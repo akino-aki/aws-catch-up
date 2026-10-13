@@ -1,4 +1,4 @@
-// 下書き（drafts/）と公開済みの記事（articles/）を調べる。
+// 下書き（drafts/<週>/）と公開済みの記事（articles/）を調べる。
 //
 //   node scripts/check-articles.js           記事ごとの状態（✍️ を書いたか、公開済みか）を表示
 //   node scripts/check-articles.js --lint    CI 向け。記事の形がテンプレートどおりでなければ失敗する
@@ -91,28 +91,46 @@ function lintText(text, slug) {
   return errors;
 }
 
+// 記事ファイルの一覧。下書きは drafts/<週>/ に、公開済みの記事は articles/ に直接置く
+function articleFiles() {
+  const files = [];
+  const walk = (rel) => {
+    const full = path.join(ROOT, rel);
+    if (!fs.existsSync(full)) return;
+    for (const entry of fs.readdirSync(full, { withFileTypes: true })) {
+      const child = `${rel}/${entry.name}`;
+      if (entry.isDirectory() && rel === "drafts") walk(child);
+      else if (entry.isFile() && entry.name.endsWith(".md")) files.push(child);
+    }
+  };
+  DIRS.forEach(walk);
+  return files.sort();
+}
+
 function listArticles() {
-  return DIRS.flatMap((dir) => {
-    const full = path.join(ROOT, dir);
-    if (!fs.existsSync(full)) return [];
-    return fs
-      .readdirSync(full)
-      .filter((name) => name.endsWith(".md"))
-      .sort()
-      .map((name) => {
-        const file = path.join(full, name);
-        const text = fs.readFileSync(file, "utf8");
-        return {
-          dir,
-          slug: name.replace(/\.md$/, ""),
-          file,
-          title: title(text),
-          published: isPublished(text),
-          studied: isStudied(text),
-          text,
-        };
-      });
+  return articleFiles().map((rel) => {
+    const file = path.join(ROOT, rel);
+    const text = fs.readFileSync(file, "utf8");
+    return {
+      dir: rel.split("/")[0],
+      folder: path.posix.dirname(rel),
+      rel,
+      slug: path.basename(rel, ".md"),
+      file,
+      title: title(text),
+      published: isPublished(text),
+      studied: isStudied(text),
+      text,
+    };
   });
+}
+
+// 下書きの場所（drafts/<週>/）が正しいか
+function placeErrors(article) {
+  if (article.dir === "drafts" && !/^drafts\/\d{4}-\d{2}-\d{2}$/.test(article.folder)) {
+    return ["下書きは drafts/<週の月曜日 YYYY-MM-DD>/ の中に置く"];
+  }
+  return [];
 }
 
 function guardErrors(article) {
@@ -133,17 +151,22 @@ if (require.main === module) {
     process.exit(lines.length > 0 ? 1 : 0);
   };
   if (process.argv.includes("--lint")) {
-    const errors = articles.flatMap((a) => lintText(a.text, a.slug).map((e) => `${a.dir}/${a.slug}.md: ${e}`));
+    const errors = articles.flatMap((a) => [...placeErrors(a), ...lintText(a.text, a.slug)].map((e) => `${a.rel}: ${e}`));
+    const slugs = articles.map((a) => a.slug);
+    for (const slug of new Set(slugs.filter((s, i) => slugs.indexOf(s) !== i))) {
+      errors.push(`同じファイル名の記事が複数ある: ${slug}`);
+    }
     if (errors.length === 0) console.log(`OK: ${articles.length} 本すべてテンプレートどおりの形になっている`);
     fail(errors);
   } else if (process.argv.includes("--guard")) {
-    const errors = articles.flatMap((a) => guardErrors(a).map((e) => `${a.dir}/${a.slug}.md: ${e}`));
+    const errors = articles.flatMap((a) => guardErrors(a).map((e) => `${a.rel}: ${e}`));
     if (errors.length === 0) console.log("OK: 公開のルールに反する記事はない");
     fail(errors);
   } else {
-    for (const dir of DIRS) {
-      const list = articles.filter((a) => a.dir === dir);
-      console.log(`${dir}/（${list.length} 本）`);
+    const folders = [...new Set(articles.map((a) => a.folder))];
+    for (const folder of folders) {
+      const list = articles.filter((a) => a.folder === folder);
+      console.log(`${folder}/（${list.length} 本）`);
       for (const a of list) console.log(`  ${a.studied ? "✍️ あり" : "✍️ なし"}  ${a.slug}  ${a.title}`);
     }
   }

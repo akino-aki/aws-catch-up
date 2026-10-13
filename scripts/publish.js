@@ -1,19 +1,19 @@
-// 指定した記事を Zenn に公開する（公開済みの記事なら、更新を反映する）。
-// aki が「〇〇を公開して」と言ったときだけ実行する（docs/workflow.md）。
+// 指定した記事を公開するための PR を作る（公開済みの記事なら、更新の PR を作る）。
+// aki が「〇〇を公開して」と言ったときに、スキル /aws-publish の中で、レビューのあとに実行する。
 //
-//   node scripts/publish.js <slug>
+//   node scripts/publish.js <slug> --body-file <PR の本文のファイル>
 //
-// 1. work で、記事を drafts/ から articles/ に移して published: true にし、コミットして push する
+// 1. work で、記事を drafts/<週>/ から articles/ に移して published: true にし、コミットして push する
 //    （公開済みの記事なら、今の内容をコミットして push する）
 // 2. main をもとに、この記事とその画像だけを取り込んだ publish/<slug> ブランチを作る
 //    記事以外（スクリプト・CI・ドキュメントなど）は work と同じにする。ほかの記事の変更は入れない
-// 3. main への PR を作り、自動マージを予約する。CI のチェックに通るとマージされ、Zenn に反映される
+// 3. main への PR を作る。自動マージはしない。aki が PR とプレビューを見てからマージする
 
 const { execFileSync } = require("child_process");
 const fs = require("fs");
 const os = require("os");
 const path = require("path");
-const { lintText, isStudied, title } = require("./check-articles");
+const { listArticles, lintText, isStudied, title } = require("./check-articles");
 
 const ROOT = path.join(__dirname, "..");
 // 記事ごとに扱うもの。これ以外は work の内容をそのまま main に合わせる
@@ -29,19 +29,24 @@ function fail(message) {
   process.exit(1);
 }
 
-const slug = process.argv[2];
-if (!slug) fail("使い方: node scripts/publish.js <slug>（drafts/ または articles/ のファイル名から .md を除いたもの）");
+const args = process.argv.slice(2);
+const slug = args.find((a) => !a.startsWith("--") && args[args.indexOf(a) - 1] !== "--body-file");
+const bodyFile = args.includes("--body-file") ? args[args.indexOf("--body-file") + 1] : null;
+if (!slug || !bodyFile) fail("使い方: node scripts/publish.js <slug> --body-file <PR の本文のファイル>");
+if (!fs.existsSync(bodyFile)) fail(`PR の本文のファイルが見つからない: ${bodyFile}`);
 
 if (git("branch", "--show-current") !== "work") fail("work ブランチで実行してください");
 
-const draft = path.join(ROOT, "drafts", `${slug}.md`);
+const found = listArticles().filter((a) => a.slug === slug);
+if (found.length === 0) fail(`${slug} という下書き・記事が見つからない`);
+if (found.length > 1) fail(`${slug} という記事が複数ある: ${found.map((a) => a.rel).join(", ")}`);
+const source = found[0];
+const isNew = source.dir === "drafts";
 const article = path.join(ROOT, "articles", `${slug}.md`);
 const imageDir = path.join(ROOT, "images", slug);
-const isNew = fs.existsSync(draft);
-if (!isNew && !fs.existsSync(article)) fail(`drafts/${slug}.md も articles/${slug}.md も見つからない`);
 
 // 1. work で公開用に整えてコミットする
-let text = fs.readFileSync(isNew ? draft : article, "utf8");
+let text = source.text;
 const errors = lintText(text, slug);
 if (errors.length > 0) fail(`記事の形がテンプレートどおりではない\n  ${errors.join("\n  ")}`);
 if (!isStudied(text)) fail("✍️ 自分の調査・勉強結果 が空なので公開できない");
@@ -50,19 +55,18 @@ if (isNew) {
   text = text.replace(/^(---\r?\n[\s\S]*?)^published:\s*false\s*$/m, "$1published: true");
   fs.mkdirSync(path.dirname(article), { recursive: true });
   fs.writeFileSync(article, text);
-  fs.unlinkSync(draft);
-  git("add", "--all", "--", `drafts/${slug}.md`);
+  fs.unlinkSync(source.file);
+  git("add", "--all", "--", source.rel);
 }
 git("add", "--", `articles/${slug}.md`);
 if (fs.existsSync(imageDir)) git("add", "--all", "--", `images/${slug}`);
 
 const articleTitle = title(text);
-const staged = git("diff", "--cached", "--name-only");
-if (staged) {
+if (git("diff", "--cached", "--name-only")) {
   git("commit", "-m", `publish: ${articleTitle}`);
   console.log(`work にコミットした: publish: ${articleTitle}`);
 } else {
-  console.log("work に新しい変更はない（コミット済みの内容で公開する）");
+  console.log("work に新しい変更はない（コミット済みの内容で PR を作る）");
 }
 git("push", "origin", "work");
 
@@ -73,7 +77,7 @@ let branch = `publish/${slug}`;
 for (let n = 2; remoteBranches.includes(`refs/heads/${branch}`); n++) branch = `publish/${slug}-${n}`;
 
 function buildPublishBranch(tree) {
-  const inTree = (...args) => run("git", args, { cwd: tree });
+  const inTree = (...a) => run("git", a, { cwd: tree });
 
   // 記事以外は work に合わせる（work で消したファイルは消す）
   const outside = (ref) =>
@@ -108,18 +112,17 @@ try {
   fail(error.message);
 }
 
-// 3. PR を作って自動マージを予約する
-const body = [
-  `${isNew ? "新しく公開" : "公開済みの記事を更新"}: \`articles/${slug}.md\``,
-  "",
-  "CI のチェックに通ると自動でマージされ、Zenn に反映されます。",
-].join("\n");
+// 3. PR を作る（マージは aki が確認してから）
 let url;
 try {
-  url = run("gh", ["pr", "create", "--base", "main", "--head", branch, "--title", `publish: ${articleTitle}`, "--body", body]);
-  run("gh", ["pr", "merge", url, "--auto", "--merge"]);
+  url = run("gh", [
+    "pr", "create",
+    "--base", "main",
+    "--head", branch,
+    "--title", `${isNew ? "publish" : "update"}: ${articleTitle}`,
+    "--body-file", bodyFile,
+  ]);
 } catch (error) {
-  fail(`${branch} ブランチは push したが、PR の作成か自動マージの予約に失敗した
-  ${(error.stderr || error.message).trim()}`);
+  fail(`${branch} ブランチは push したが、PR の作成に失敗した\n  ${(error.stderr || error.message).trim()}`);
 }
-console.log(`PR を作成し、自動マージを予約した: ${url}`);
+console.log(`PR を作成した: ${url}`);
