@@ -1,5 +1,5 @@
 ---
-title: "AWS Batch がジョブの件数や所要時間を CloudWatch のメトリクスとして自動で出すようになった"
+title: "【2026/10/6 アップデート】AWS Batch がジョブの件数や所要時間を CloudWatch に自動で出すようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "batch", "cloudwatch"]

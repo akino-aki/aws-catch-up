@@ -1,5 +1,5 @@
 ---
-title: "RDS for Oracle でマイナーアップグレードの事前チェックを自分で実行でき、パッチ中の停止も短くしやすくなった"
+title: "【2026/10/8 アップデート】RDS for Oracle でマイナーアップグレードの事前チェックを自分で実行できるように"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "rds", "oracle"]

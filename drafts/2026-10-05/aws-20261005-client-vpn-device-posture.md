@@ -1,5 +1,5 @@
 ---
-title: "AWS Client VPN が、つなぐ端末の安全性をチェックしてから接続を許可できるようになった"
+title: "【2026/10/5 アップデート】AWS Client VPN が、つなぐ端末の安全性をチェックしてから接続を許可できるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "vpn", "security"]

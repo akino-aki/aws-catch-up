@@ -1,5 +1,5 @@
 ---
-title: "IAM Identity Center のユーザー情報（Identity Store）に、どこから操作できるかの制限をかけられるようになった"
+title: "【2026/10/5 アップデート】IAM Identity Center のユーザー情報を、操作できる場所で制限できるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "iam", "security"]

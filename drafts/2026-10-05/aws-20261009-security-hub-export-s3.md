@@ -1,5 +1,5 @@
 ---
-title: "Security Hub の検出結果を、画面から CSV や JSON で S3 に書き出せるようになった"
+title: "【2026/10/9 アップデート】Security Hub の検出結果を、画面から CSV や JSON で S3 に書き出せるように"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "securityhub", "s3"]

@@ -1,5 +1,5 @@
 ---
-title: "Lambda が自前の Kafka からメッセージを受け取るとき、OAuth で認証できるようになった"
+title: "【2026/10/9 アップデート】Lambda が自前の Kafka からメッセージを受け取るとき、OAuth で認証できるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "lambda", "kafka"]

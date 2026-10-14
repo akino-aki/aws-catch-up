@@ -1,5 +1,5 @@
 ---
-title: "音声エージェント向けの Amazon Nova 2.5 Sonic が出て、推論とツール呼び出しが賢くなった"
+title: "【2026/10/5 アップデート】音声エージェント向けの Amazon Nova 2.5 Sonic が出て、推論とツール呼び出しが向上"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "bedrock", "nova"]

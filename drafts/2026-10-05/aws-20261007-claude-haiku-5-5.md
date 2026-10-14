@@ -1,5 +1,5 @@
 ---
-title: "Claude Haiku 5.5 が Bedrock と Claude Platform on AWS で使えるようになった"
+title: "【2026/10/7 アップデート】Claude Haiku 5.5 が Bedrock などで使えるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "bedrock", "claude"]

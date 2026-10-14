@@ -1,5 +1,5 @@
 ---
-title: "Amazon Quick にブランドテンプレートを登録して、決まったデザインで資料を作れるようになった"
+title: "【2026/10/9 アップデート】Amazon Quick にブランドテンプレートを登録して、決まったデザインで資料を作れるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "quick"]

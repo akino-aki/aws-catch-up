@@ -1,5 +1,5 @@
 ---
-title: "Redshift のマテリアライズドビューを Iceberg テーブルとして S3 に保存し、ほかのエンジンからも読めるようになった"
+title: "【2026/10/5 アップデート】Redshift のマテリアライズドビューを Iceberg 形式で S3 に保存できるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "redshift", "iceberg"]

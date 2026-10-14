@@ -1,5 +1,5 @@
 ---
-title: "AWS Config が記録できるリソースの種類が 77 個増えた"
+title: "【2026/10/7 アップデート】AWS Config が記録できるリソースの種類が 77 個増えた"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "config"]

@@ -1,5 +1,5 @@
 ---
-title: "Cost Explorer や Budgets で、Bedrock の料金をモデルごと・プロバイダーごとに分けて見られるようになった"
+title: "【2026/10/8 アップデート】Bedrock の料金を、Cost Explorer などでモデル・プロバイダーごとに見られるように"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "bedrock", "costexplorer"]
