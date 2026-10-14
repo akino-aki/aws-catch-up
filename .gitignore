@@ -1,2 +1,7 @@
 node_modules
 .DS_Store
+# 下書きのプレビュー用（scripts/preview-drafts.js が作る）
+.preview/
+# Obsidian の設定（個人の環境の情報が入るため公開しない）
+.obsidian/
+*.stackdump
