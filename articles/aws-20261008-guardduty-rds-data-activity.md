@@ -115,6 +115,13 @@ CloudTrailの管理イベントが分析できるのがいいなーって感じ�
 ドキュメントにも「すでにGuardDutyを使っている場合、あとから出た保護プランは自動では有効にならない」とあって、そのとおりの動きだった。
 新しい保護プランが出たら既存の環境では自分でオンにしないといけないので、週刊AWSなどで追いかけるのは大事ですね。
 
+:::message
+**追記（2026/10/15）**
+GuardDutyにはアップデートのお知らせ専用のSNSトピック（GuardDutyAnnouncements）があって、サブスクライブしておくと、新機能・新しい検出結果タイプ・既存の検出結果タイプの変更などを、メールなどで受け取れるらしい。
+サブスクライブはまだ試していないので、後日やってみるかも。
+[Subscribing to Amazon SNS GuardDuty announcements](https://docs.aws.amazon.com/guardduty/latest/ug/guardduty_sns.html)
+:::
+
 ## 今回のアップデート内容
 
 GuardDutyの基本が分かったところで本題。
