@@ -72,6 +72,13 @@ AdministratorAccess でも拒否されるので、組織側の SCP[^scp-phone] �
 
 個人の AWS アカウントで、CloudShell から `aws account get-contact-information --query VerificationStatus` を実行して状態を見る。そのあと、自分の携帯にコードを送って検証してみる。
 
+<!--
+## まとめ
+
+- 分かったことを 3〜5 個の箇条書きで（途中の感想を並べ直すだけでよい）
+- 試せなかったこと・まだ確かめていないことがあれば、最後に 1 行
+-->
+
 # 参考
 
 - [週刊AWS – 2026/9/28週](https://aws.amazon.com/jp/blogs/news/aws-weekly-20260928/)

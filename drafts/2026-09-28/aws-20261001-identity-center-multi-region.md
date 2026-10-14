@@ -133,6 +133,13 @@ https://docs.aws.amazon.com/kms/latest/developerguide/multi-region-keys-overview
 
 個人の AWS アカウントで組織インスタンスを作り、マルチリージョンを有効にする。ユーザーを作って、追加リージョンのアクセスポータルからもログインできるか確かめる。
 
+<!--
+## まとめ
+
+- 分かったことを 3〜5 個の箇条書きで（途中の感想を並べ直すだけでよい）
+- 試せなかったこと・まだ確かめていないことがあれば、最後に 1 行
+-->
+
 # 参考
 
 - [週刊AWS – 2026/9/28週](https://aws.amazon.com/jp/blogs/news/aws-weekly-20260928/)
