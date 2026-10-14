@@ -4,8 +4,21 @@
     {
       "name": "zenn-preview",
       "runtimeExecutable": "npx",
-      "runtimeArgs": ["zenn", "preview", "--port", "8000"],
+      "runtimeArgs": [
+        "zenn",
+        "preview",
+        "--port",
+        "8000"
+      ],
       "port": 8000
+    },
+    {
+      "name": "zenn-preview-drafts",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "scripts/preview-drafts.js"
+      ],
+      "port": 8001
     }
   ]
 }
