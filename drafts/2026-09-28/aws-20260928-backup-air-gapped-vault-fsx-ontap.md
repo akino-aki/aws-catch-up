@@ -1,5 +1,5 @@
 ---
-title: "AWS Backup の論理的エアギャップボールトで FSx for NetApp ONTAP を保護できるようになった"
+title: "【2026/9/28 アップデート】AWS Backup の論理的エアギャップボールトで FSx for ONTAP を保護できるように"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "awsbackup"]

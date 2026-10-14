@@ -1,5 +1,5 @@
 ---
-title: "AWS Health に、ソフトウェアのサポート期限を一覧できる version catalog が追加された"
+title: "【2026/10/2 アップデート】AWS Health でソフトウェアのサポート期限を一覧できるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws"]

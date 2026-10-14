@@ -1,5 +1,5 @@
 ---
-title: "Amazon Quick に「地域 → 国 → 都市」とたどれる階層フィルターが追加された"
+title: "【2026/9/30 アップデート】Amazon Quick に「地域 → 国 → 都市」とたどれる階層フィルターが追加された"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "quicksight"]

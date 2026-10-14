@@ -1,5 +1,5 @@
 ---
-title: "AWS アカウントの連絡先の電話番号を SMS で検証できるようになった"
+title: "【2026/9/30 アップデート】AWS アカウントの連絡先の電話番号を SMS で検証できるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "security"]

@@ -1,5 +1,5 @@
 ---
-title: "Aurora Serverless が急な負荷に 1 秒以内でスケールするようになった"
+title: "【2026/9/30 アップデート】Aurora Serverless が急な負荷に 1 秒以内でスケールするようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "aurora"]

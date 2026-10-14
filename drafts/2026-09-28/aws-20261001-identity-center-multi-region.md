@@ -1,5 +1,5 @@
 ---
-title: "IAM Identity Center のマルチリージョン対応が、オプトインリージョンなどに広がった"
+title: "【2026/10/1 アップデート】IAM Identity Center のマルチリージョン対応が、オプトインリージョンなどに広がった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "iam", "security"]

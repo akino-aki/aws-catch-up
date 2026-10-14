@@ -1,5 +1,5 @@
 ---
-title: "Aurora DSQL でパーシャルインデックスが使えるようになった"
+title: "【2026/10/2 アップデート】Aurora DSQL でパーシャルインデックスが使えるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "aurora"]

@@ -1,5 +1,5 @@
 ---
-title: "Amazon Bedrock で OpenAI GPT-6.1 Sol が使えるようになった"
+title: "【2026/9/29 アップデート】Amazon Bedrock で OpenAI GPT-6.1 Sol が使えるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "bedrock", "openai"]

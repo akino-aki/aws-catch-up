@@ -1,5 +1,5 @@
 ---
-title: "SageMaker Unified Studio が外部の Iceberg カタログと DocumentDB の IAM 認証に対応した"
+title: "【2026/9/28 アップデート】SageMaker Unified Studio が外部の Iceberg カタログなどに対応した"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "sagemaker"]

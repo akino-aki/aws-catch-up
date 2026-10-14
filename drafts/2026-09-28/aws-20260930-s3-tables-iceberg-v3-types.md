@@ -1,5 +1,5 @@
 ---
-title: "S3 Tables が Apache Iceberg V3 のすべてのデータ型に対応した"
+title: "【2026/9/30 アップデート】S3 Tables が Apache Iceberg V3 のすべてのデータ型に対応した"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "s3", "iceberg"]

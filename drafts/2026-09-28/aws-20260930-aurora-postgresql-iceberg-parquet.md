@@ -1,5 +1,5 @@
 ---
-title: "Aurora PostgreSQL から S3 の Iceberg / Parquet を直接クエリできるようになった"
+title: "【2026/9/30 アップデート】Aurora PostgreSQL から S3 の Iceberg / Parquet を直接クエリ"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "aurora", "postgresql"]

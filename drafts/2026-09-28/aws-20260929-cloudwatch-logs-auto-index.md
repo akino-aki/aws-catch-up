@@ -1,5 +1,5 @@
 ---
-title: "CloudWatch Logs がよく検索するフィールドに自動でインデックスを付けるようになった"
+title: "【2026/9/29 アップデート】CloudWatch Logs がよく検索するフィールドに自動でインデックスを付けるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "cloudwatch"]

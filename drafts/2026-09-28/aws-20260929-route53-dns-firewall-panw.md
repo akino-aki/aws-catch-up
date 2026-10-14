@@ -1,5 +1,5 @@
 ---
-title: "Route 53 DNS Firewall で Palo Alto Networks の脅威リストが使えるようになった"
+title: "【2026/9/29 アップデート】Route 53 DNS Firewall で Palo Alto の脅威リストが使えるように"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "route53", "security"]

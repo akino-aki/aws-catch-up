@@ -1,5 +1,5 @@
 ---
-title: "CloudWatch Logs Insights で、クエリの前にスキャン量を見積もれるようになった"
+title: "【2026/9/29 アップデート】CloudWatch Logs Insights で、クエリの前にスキャン量を見積もれるようになった"
 emoji: "☁️"
 type: "tech"
 topics: ["aws", "cloudwatch"]
