@@ -185,14 +185,14 @@ def handler(event, context):
 ![Lambdaのコードを更新した](/images/aws-20261008-guardduty-rds-data-activity-test/13-lambda-code-updated.png)
 
 ### 持ち出し（exfil）を流す
-「テスト」タブで、イベントJSONを`{"action": "exfil"}`にして実行した（10/29 0:59ごろ）。
+「テスト」タブで、イベントJSONを`{"action": "exfil"}`にして実行した。
 
 ![exfilの実行結果](/images/aws-20261008-guardduty-rds-data-activity-test/14-test-exfil.png)
 
 10万行を読んで、約7秒。10万行を一度にメモリに載せるので、使ったメモリは112MBで、設定の128MBぎりぎりだった。
 
 ### 破壊（destroy）を流す
-10分ほどあけて、イベントJSONを`{"action": "destroy"}`にして実行した（10/29 1:10ごろ）。
+10分ほどあけて、イベントJSONを`{"action": "destroy"}`にして実行した。
 
 ![destroyの実行結果](/images/aws-20261008-guardduty-rds-data-activity-test/15-test-destroy.png)
 
@@ -212,9 +212,9 @@ GuardDutyは「ほぼリアルタイム」で分析すると書かれていて�
 | 0:59 | Lambda | `app_user` | `web-app` | 10万行を全件`SELECT` | 出ない |
 | 1:10 | Lambda | `app_user` | `web-app` | 5万行を`DELETE` | 出ない |
 | 20:20〜 | Lambda | `app_user` | `web-app` | 5万行の全件`SELECT`を、ばらばらの間隔で1時間ほどくり返す | 出ない |
-| 20:48 | Lambda | **管理ユーザー** | `web-app` | 5万行を全件`SELECT` | 出ない |
-| 21:13・21:15 | **CloudShell** | `app_user` | `web-app` | 5万行を全件`SELECT` | 出ない |
-| 22:27〜22:30 | **CloudShell** | **管理ユーザー** | **`psql`** | **全部入り**（下で説明） | 出ない |
+| 20:48 | Lambda | 管理ユーザー | `web-app` | 5万行を全件`SELECT` | 出ない |
+| 21:13・21:15 | CloudShell | `app_user` | `web-app` | 5万行を全件`SELECT` | 出ない |
+| 22:27〜22:30 | CloudShell | 管理ユーザー | `psql` | 全部入り（下で説明） | 出ない |
 
 ### 学習期間が明けてから、くり返す
 10/14に有効にしたので、0:59はちょうど2週間を過ぎたところ。学習が終わりきっていなかったのかもしれないので、その日の夜に、全件の`SELECT`をばらばらの間隔でくり返しました。
