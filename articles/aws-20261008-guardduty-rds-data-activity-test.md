@@ -89,7 +89,9 @@ GuardDutyが「いつもの状態」を覚えるには、毎日同じような�
 | Lambda `gd-test-baseline`  | `app_user`で、数件ずつの`SELECT`を3〜6回流す    |
 | EventBridgeのルール            | 1時間ごとにLambdaを動かす                    |
 | Secrets ManagerのVPCエンドポイント | VPCの中のLambdaが、DBのパスワードを取りに行くための通り道  |
+
 「いつもの動き」はこんな感じ。数件ずつ読むだけにしてます。
+
 ```python
 def baseline():
     con = connect(os.environ["APP_SECRET_ARN"], "web-app")
