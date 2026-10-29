@@ -1,5 +1,5 @@
 ---
-title: 【2026/10/8 アップデート】GuardDutyのRDSデータ監視の検証、見事に失敗
+title: 【2026/10/8 アップデート】GuardDuty RDS Protectionのデータ監視の検証、見事に失敗
 emoji: ☁️
 type: tech
 topics:
