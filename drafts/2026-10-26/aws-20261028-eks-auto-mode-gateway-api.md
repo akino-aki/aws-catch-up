@@ -21,7 +21,7 @@ https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-eks-auto-mode-kubernet
 
 | 項目 | 内容 |
 |---|---|
-| **要約** | EKS Auto Mode が Kubernetes の Gateway API に対応し、Gateway や HTTPRoute を書くだけで、AWS のロードバランサーが自動で用意されるようになった |
+| **要約** | EKS Auto Mode が Kubernetes の Gateway API に対応し、クラスターで有効にすれば、Gateway や HTTPRoute などを書くだけで AWS のロードバランサー（ALB・NLB）が自動で用意されるようになった |
 | **料金** | 機能自体は EKS Auto Mode に含まれる。作られたロードバランサーの通常の料金はかかる |
 | **対象** | EKS Auto Mode が使えるすべてのリージョン |
 
@@ -38,18 +38,27 @@ https://aws.amazon.com/about-aws/whats-new/2026/10/amazon-eks-auto-mode-kubernet
 
 | | これまで | これから |
 |---|---|---|
-| Gateway API を使うには | コントローラー（AWS Load Balancer Controller など）を自分で入れて設定する | 何も入れずに使える |
-| できること | ― | HTTP・gRPC の振り分け、名前空間をまたぐ振り分け、重み付けでの分割、ヘッダーでの振り分け、ACM の証明書の自動検出 |
+| Gateway API を使うには | コントローラー（AWS Load Balancer Controller など）を自分で入れて設定する | クラスターの設定で有効にするだけ。コントローラーは入れなくてよい |
+| Gateway API の定義（CRD[^crd]） | 自分で入れて、更新する | AWS に管理を任せる（Managed）か、自分で管理する（Unmanaged）かを選べる |
+| できること | ― | HTTP・gRPC の振り分け（ALB）と TCP・UDP の振り分け（NLB）、名前空間をまたぐ振り分け、重み付けでの分割、ヘッダーでの振り分け、ACM の証明書の自動検出 |
 | 既存の Ingress | ― | そのまま一緒に使える |
 
 **どんなときにうれしい？**
 新しいバージョンを 1 割のアクセスだけで試す、チームごとに名前空間を分けて入口は共有する、といった振り分けを、Kubernetes の標準の書き方でしたいとき。コントローラーの運用やアップデートの手間もなくなります。
 
+:::message alert
+- 使う前に、クラスターの設定で Gateway API を有効にする必要があります（Managed か Unmanaged を選ぶ）。すでに CRD が入っているクラスターで Managed を選ぶには、CRD が v1 になっている必要があります
+- ロードバランサーを置くサブネットを見分けるため、サブネットにタグが必要です（eksctl で作ったクラスターなら付いています）
+- Gateway API の項目のすべてが、ALB・NLB の機能に対応しているわけではありません
+:::
+
 :::message
 **確認ポイント**
-EKS のドキュメントの Auto Mode の Gateway API の説明と、使う GatewayClass の指定
-キーワード: EKS Auto Mode Gateway API, HTTPRoute, GatewayClass
+EKS コンソールのクラスターの設定で、Gateway API の有効化と Managed / Unmanaged の選択。GatewayClass の `controllerName` には、ALB なら `eks.amazonaws.com/gateway-alb`、NLB なら `eks.amazonaws.com/gateway-nlb` を指定する
+キーワード: EKS Auto Mode Gateway API, GatewayClass, HTTPRoute, gatewayApi.crds.managed
 :::
+
+[^crd]: Custom Resource Definition。Gateway や HTTPRoute といった、Kubernetes の設定の種類そのものの定義
 
 
 # ✍️ 自分の調査・勉強結果
