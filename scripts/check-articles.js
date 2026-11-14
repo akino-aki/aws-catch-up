@@ -6,6 +6,10 @@
 //                                              - articles/ の記事は published: true で、✍️ が書かれている
 //                                              - drafts/ の記事は published: false
 //
+// 記事は 2 種類ある。ファイル名（slug）で見分ける。
+//   週刊AWS の記事  aws-YYYYMMDD-名前。drafts/<週の月曜日>/ に置き、テンプレートの 4 つの見出しで書く
+//   そのほかの記事  aws- で始まらない名前。drafts/<テーマ名>/ に置き、見出しは自由。全体が aki の文章
+//
 // ✍️ 欄が書かれているかは、空のまま公開されるのを防ぐためだけに見る。
 // 公開するかどうかは aki が決める（docs/workflow.md）。
 
@@ -15,6 +19,8 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 const DIRS = ["drafts", "articles"];
 const SLUG = /^aws-\d{8}-[a-z0-9-]+$/;
+const OTHER_SLUG = /^[a-z0-9-]+$/;
+const WEEK = /^\d{4}-\d{2}-\d{2}$/;
 const SECTIONS = ["はじめに", "🤖 AIの解説", "✍️ 自分の調査・勉強結果", "参考"];
 const STUDY = SECTIONS[2];
 const FENCE = /^\s*(```|~~~)/;
@@ -44,7 +50,7 @@ function isPublished(text) {
 
 function title(text) {
   const m = (frontmatter(text) ?? "").match(/^title:\s*"?(.*?)"?\s*$/m);
-  return m ? m[1] : "";
+  return m ? m[1].replace(/\\"/g, '"') : "";
 }
 
 // 「# 見出し」ごとに本文を分ける。見出しより前（導入文）は heading: null。
@@ -60,8 +66,20 @@ function sections(text) {
   return result;
 }
 
-// ✍️ 欄にテンプレートのコメントと脚注の定義以外の文字があるか
-function isStudied(text) {
+// 週刊AWS の記事か（それ以外は、見出しが自由な「そのほかの記事」）
+function isWeekly(slug) {
+  return slug.startsWith("aws-");
+}
+
+// 本文がフロントマターとコメントだけでないか
+function hasBody(text) {
+  return text.replace(/^---\r?\n[\s\S]*?\r?\n---/, "").replace(/<!--[\s\S]*?-->/g, "").trim() !== "";
+}
+
+// ✍️ 欄にテンプレートのコメントと脚注の定義以外の文字があるか。
+// そのほかの記事は全体が aki の文章なので、本文があるかを見る
+function isStudied(text, slug) {
+  if (slug && !isWeekly(slug)) return hasBody(text);
   const study = sections(text).find((s) => s.heading === STUDY);
   if (!study) return false;
   const body = study.lines
@@ -74,7 +92,9 @@ function isStudied(text) {
 // 記事の形がテンプレートどおりかを調べ、問題点の一覧を返す（問題がなければ空）
 function lintText(text, slug) {
   const errors = [];
-  if (!SLUG.test(slug)) errors.push(`ファイル名が aws-YYYYMMDD-名前 の形になっていない: ${slug}`);
+  const weekly = isWeekly(slug);
+  if (weekly && !SLUG.test(slug)) errors.push(`ファイル名が aws-YYYYMMDD-名前 の形になっていない: ${slug}`);
+  if (!weekly && !OTHER_SLUG.test(slug)) errors.push(`ファイル名は英小文字・数字・ハイフンだけにする: ${slug}`);
   if (slug.length < 12 || slug.length > 50) errors.push(`ファイル名（拡張子なし）は 12〜50 文字にする（Zenn の制限）: ${slug.length} 文字`);
   const fm = frontmatter(text);
   if (!fm) errors.push("フロントマターがない");
@@ -85,7 +105,7 @@ function lintText(text, slug) {
     else if (t.length > 70) errors.push(`タイトルが長すぎる（Zenn は 70 文字まで）: ${t.length} 文字`);
   }
   const headings = sections(text).slice(1).map((s) => s.heading);
-  if (headings.join(" / ") !== SECTIONS.join(" / ")) {
+  if (weekly && headings.join(" / ") !== SECTIONS.join(" / ")) {
     errors.push(`「#」の見出しは ${SECTIONS.join(" / ")} の順に 1 つずつにする（今: ${headings.join(" / ") || "なし"}）`);
   }
   return errors;
@@ -119,16 +139,21 @@ function listArticles() {
       file,
       title: title(text),
       published: isPublished(text),
-      studied: isStudied(text),
+      studied: isStudied(text, path.basename(rel, ".md")),
       text,
     };
   });
 }
 
-// 下書きの場所（drafts/<週>/）が正しいか
+// 下書きの場所が正しいか。週刊AWS は drafts/<週>/、そのほかの記事は drafts/<テーマ名>/
 function placeErrors(article) {
-  if (article.dir === "drafts" && !/^drafts\/\d{4}-\d{2}-\d{2}$/.test(article.folder)) {
-    return ["下書きは drafts/<週の月曜日 YYYY-MM-DD>/ の中に置く"];
+  if (article.dir !== "drafts") return [];
+  const sub = article.folder.split("/")[1] ?? "";
+  if (isWeekly(article.slug) && !WEEK.test(sub)) {
+    return ["週刊AWS の下書きは drafts/<週の月曜日 YYYY-MM-DD>/ の中に置く"];
+  }
+  if (!isWeekly(article.slug) && (!sub || WEEK.test(sub) || !OTHER_SLUG.test(sub))) {
+    return ["週刊AWS 以外の下書きは drafts/<テーマ名（英小文字・数字・ハイフン）>/ の中に置く"];
   }
   return [];
 }
@@ -137,7 +162,7 @@ function guardErrors(article) {
   const errors = [];
   if (article.dir === "articles") {
     if (!article.published) errors.push("articles/ にあるのに published: false になっている");
-    if (!article.studied) errors.push("✍️ 欄が空のまま articles/ にある（空のまま公開されてしまう）");
+    if (!article.studied) errors.push(isWeekly(article.slug) ? "✍️ 欄が空のまま articles/ にある（空のまま公開されてしまう）" : "本文が空のまま articles/ にある");
   } else if (article.published) {
     errors.push("drafts/ にあるのに published: true になっている");
   }
@@ -167,9 +192,9 @@ if (require.main === module) {
     for (const folder of folders) {
       const list = articles.filter((a) => a.folder === folder);
       console.log(`${folder}/（${list.length} 本）`);
-      for (const a of list) console.log(`  ${a.studied ? "✍️ あり" : "✍️ なし"}  ${a.slug}  ${a.title}`);
+      for (const a of list) console.log(`  ${!isWeekly(a.slug) ? "単発   " : a.studied ? "✍️ あり" : "✍️ なし"}  ${a.slug}  ${a.title}`);
     }
   }
 }
 
-module.exports = { listArticles, lintText, isStudied, isPublished, title, guardErrors, SLUG };
+module.exports = { listArticles, lintText, isStudied, isWeekly, isPublished, title, guardErrors, SLUG };
