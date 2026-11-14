@@ -3,7 +3,7 @@ title: "【Claude先生のbash課題 1】\"を付けなかったら、ファイ�
 emoji: "🐚"
 type: "tech"
 topics: ["bash", "shell", "初心者"]
-published: false
+published: true
 ---
 
 # はじめに
