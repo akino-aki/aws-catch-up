@@ -3,7 +3,7 @@
 //
 //   node scripts/publish.js <slug> --body-file <PR の本文のファイル>
 //
-// 1. work で、記事を drafts/<週>/ から articles/ に移して published: true にし、コミットして push する
+// 1. work で、記事を drafts/<週 または テーマ名>/ から articles/ に移して published: true にし、コミットして push する
 //    （公開済みの記事なら、今の内容をコミットして push する）
 // 2. main をもとに、この記事とその画像だけを取り込んだ publish/<slug> ブランチを作る
 //    記事以外（スクリプト・CI・ドキュメントなど）は work と同じにする。ほかの記事の変更は入れない
@@ -49,7 +49,7 @@ const imageDir = path.join(ROOT, "images", slug);
 let text = source.text;
 const errors = lintText(text, slug);
 if (errors.length > 0) fail(`記事の形がテンプレートどおりではない\n  ${errors.join("\n  ")}`);
-if (!isStudied(text)) fail("✍️ 自分の調査・勉強結果 が空なので公開できない");
+if (!isStudied(text, slug)) fail("✍️ 自分の調査・勉強結果（週刊AWS 以外の記事なら本文）が空なので公開できない");
 
 if (isNew) {
   text = text.replace(/^(---\r?\n[\s\S]*?)^published:\s*false\s*$/m, "$1published: true");
