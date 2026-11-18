@@ -52,11 +52,13 @@ if (errors.length > 0) fail(`記事の形がテンプレートどおりではな
 if (!isStudied(text, slug)) fail("✍️ 自分の調査・勉強結果（週刊AWS 以外の記事なら本文）が空なので公開できない");
 
 if (isNew) {
+  // 一度もコミットしていない下書きは、消したことを git に伝える必要がない（伝えようとすると git add が失敗する）
+  const tracked = git("ls-files", "--", source.rel) !== "";
   text = text.replace(/^(---\r?\n[\s\S]*?)^published:\s*false\s*$/m, "$1published: true");
   fs.mkdirSync(path.dirname(article), { recursive: true });
   fs.writeFileSync(article, text);
   fs.unlinkSync(source.file);
-  git("add", "--all", "--", source.rel);
+  if (tracked) git("add", "--all", "--", source.rel);
 }
 git("add", "--", `articles/${slug}.md`);
 if (fs.existsSync(imageDir)) git("add", "--all", "--", `images/${slug}`);
